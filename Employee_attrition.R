@@ -47,6 +47,8 @@ chart1 <- df %>%
  labs (x = "") +
  facet_wrap(~ name, scales = "free")
 
+chart1
+
 chart2 <- df %>% 
  keep(is.numeric) %>%
  pivot_longer(everything()) %>% 
@@ -54,6 +56,8 @@ chart2 <- df %>%
  geom_histogram() +
  labs (x = "") +
  facet_wrap(~ name, scales = "free")
+
+chart2
 
 
 df$MonthlyIncome <- ifelse(df$MonthlyIncome %in% boxplot(df$MonthlyIncome, plot = F)$out,
@@ -88,15 +92,13 @@ df <- na.omit(df)
 
 # Sample imbalance --------------------------------------------------------
 
-count_attrition <- df %>%
- group_by(Attrition) %>%
- summarize(count = n())
 
-percentage_attrition <- df %>% 
- group_by(Attrition) %>% 
- summarize(percent = 100 * n() / nrow(df))
-
-data_imbalance <- cbind.data.frame(count_attrition,percentage_attrition)
+data_imbalance <- cbind.data.frame(df %>%
+                                     group_by(Attrition) %>%
+                                     summarize(count = n()),
+                                   df %>% 
+                                     group_by(Attrition) %>% 
+                                     summarize(percent = 100 * n() / nrow(df)))
 
 data_imbalance <- data_imbalance[,-3]
 
@@ -104,7 +106,7 @@ data_imbalance <- data_imbalance[,-3]
 # histograms after outlier removal ----------------------------------------
 
 
-chart4 <- df %>% 
+chart3 <- df %>% 
  keep(is.numeric) %>%
  pivot_longer(everything()) %>% 
  ggplot(aes(value)) + 
@@ -112,13 +114,17 @@ chart4 <- df %>%
  labs (x = "") +
  facet_wrap(~ name, scales = "free")
 
-chart5 <- df %>% 
+chart3
+
+chart4 <- df %>% 
  keep(is.numeric) %>%
  pivot_longer(everything()) %>% 
  ggplot(aes(value)) + 
  geom_histogram() +
  labs (x = "") +
  facet_wrap(~ name, scales = "free")
+
+chart4
 
 
 # splitting sample --------------------------------------------------------
@@ -134,42 +140,42 @@ train <- train [,-29]
 
 #bar charts of categorical features by y
 
-chart6 <- ggplot(df, aes(y = Department)) +
+chart5 <- ggplot(df, aes(y = Department)) +
   geom_bar(aes(fill = Attrition)) +
   scale_fill_grey(start = 0.6, end = 0.1) +
   theme(legend.position = "right")
 
-chart7 <- ggplot(df, aes(y = BusinessTravel)) +
+chart6 <- ggplot(df, aes(y = BusinessTravel)) +
   geom_bar(aes(fill = Attrition)) +
   scale_fill_grey(start = 0.6, end = 0.1) +
   theme(legend.position = "right")
 
-chart8 <- ggplot(df, aes(y = EducationField)) +
+chart7 <- ggplot(df, aes(y = EducationField)) +
   geom_bar(aes(fill = Attrition)) +
   scale_fill_grey(start = 0.6, end = 0.1) +
   theme(legend.position = "right")
 
-chart9 <- ggplot(df, aes(y = Gender)) +
+chart8 <- ggplot(df, aes(y = Gender)) +
   geom_bar(aes(fill = Attrition)) +
   scale_fill_grey(start = 0.6, end = 0.1) +
   theme(legend.position = "right")
 
-chart10 <- ggplot(df, aes(y = JobRole)) +
+chart9 <- ggplot(df, aes(y = JobRole)) +
   geom_bar(aes(fill = Attrition)) +
   scale_fill_grey(start = 0.6, end = 0.1) +
   theme(legend.position = "right")
 
-chart11 <- ggplot(df, aes(y = MaritalStatus)) +
+chart10 <- ggplot(df, aes(y = MaritalStatus)) +
   geom_bar(aes(fill = Attrition)) +
   scale_fill_grey(start = 0.6, end = 0.1) +
   theme(legend.position = "right")
 
-chart12 <- ggplot(df, aes(y = OverTime)) +
+chart11 <- ggplot(df, aes(y = OverTime)) +
   geom_bar(aes(fill = Attrition)) +
   scale_fill_grey(start = 0.6, end = 0.1) +
   theme(legend.position = "right")
 
-chart13 <- ggplot(df, aes(y = StockOptions)) +
+chart12 <- ggplot(df, aes(y = StockOptions)) +
   geom_bar(aes(fill = Attrition)) +
   scale_fill_grey(start = 0.6, end = 0.1) +
   theme(legend.position = "right")
@@ -178,14 +184,14 @@ chart13 <- ggplot(df, aes(y = StockOptions)) +
 library(ggpubr)
 
 
-combined_plot <- ggarrange(chart6,
+combined_plot <- ggarrange(chart5,
+                           chart6,
                            chart7,
                            chart8,
                            chart9,
                            chart10,
                            chart11,
                            chart12,
-                           chart13,
                            nrow = 2,
                            ncol = 4)
 
@@ -193,12 +199,12 @@ combined_plot
 
 #monthly income and attrition
 
-chart14 <- ggplot(df, aes(x = Attrition, y = MonthlyIncome)) +
+chart13 <- ggplot(df, aes(x = Attrition, y = MonthlyIncome)) +
   geom_boxplot() +
   scale_fill_grey() +
   theme(legend.position = "right")
 
-chart14
+chart13
 
 #Median monthly icome by y
 
@@ -218,9 +224,9 @@ library(ggcorrplot)
 nums <- select_if(df, is.numeric)
 correl_matrix <- round(cor(nums),1)
 
-chart15 <- ggcorrplot(correl_matrix, method ="square", hc.order = TRUE, type = "lower", 
+chart14 <- ggcorrplot(correl_matrix, method ="square", hc.order = TRUE, type = "lower", 
            outline.color ="grey", lab = TRUE, colors = c("grey", "white", "darkgrey"))
-chart15
+chart14
 
 # Naive Bayes Classification ----------------------------------------------
 
@@ -369,7 +375,7 @@ pseudo_values <- c(pseudo_r_1, pseudo_r_2, pseudo_r_3, pseudo_r_4, pseudo_r_5, p
           pseudo_r_7, pseudo_r_8, pseudo_r_9, pseudo_r_10, pseudo_r_11, pseudo_r_12,
           pseudo_r_13, pseudo_r_14, pseudo_r_15, pseudo_r_16)
 
-pseudo_comparison <- cbind.data.frame(model_names, pseudo_values)
+pseudo_comparison <- cbind.data.frame(model_names, pseudo_values) #warining: comparing pseudo r values leads to false conclusions
 write.csv(pseudo_comparison, "pseudo_comparison.csv")
 
 #variable importance
@@ -379,13 +385,13 @@ variables <- variable.names(lm16)[-1]
 
 varimp <- caret::varImp(lm16)
 
-chart16 <- varimp %>% 
+chart15 <- varimp %>% 
  mutate(variables = fct_reorder(variables, varimp$Overall)) %>% 
  ggplot(aes(x = variables, y = varimp$Overall)) +
  labs (x = "Variable name", y = "Variable importance") +
  geom_bar(stat = "identity") + coord_flip()
 
-chart16
+chart15
 
 #calculate VIF values for each predictor variable in our model
 
@@ -508,7 +514,7 @@ rf_predicted <- predict(rf_attrition, test)
 
 table(rf_predicted, test$Attrition)
 
-accuracy_rf <- (287+16)/356
+accuracy_rf <- (286+16)/356
 
 #variable importance
 
