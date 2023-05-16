@@ -145,6 +145,8 @@ chart5 <- ggplot(df, aes(y = Department)) +
   scale_fill_grey(start = 0.6, end = 0.1) +
   theme(legend.position = "right")
 
+chart5
+
 chart6 <- ggplot(df, aes(y = BusinessTravel)) +
   geom_bar(aes(fill = Attrition)) +
   scale_fill_grey(start = 0.6, end = 0.1) +
@@ -192,8 +194,8 @@ combined_plot <- ggarrange(chart5,
                            chart10,
                            chart11,
                            chart12,
-                           nrow = 2,
-                           ncol = 4)
+                           nrow = 3,
+                           ncol = 3)
 
 combined_plot
 
@@ -388,7 +390,7 @@ varimp <- caret::varImp(lm16)
 chart15 <- varimp %>% 
  mutate(variables = fct_reorder(variables, varimp$Overall)) %>% 
  ggplot(aes(x = variables, y = varimp$Overall)) +
- labs (x = "Variable name", y = "Variable importance") +
+ labs (x = "Variable", y = "Importance") +
  geom_bar(stat = "identity") + coord_flip()
 
 chart15
@@ -533,22 +535,41 @@ accuracy_comp <- round(c(accuracy_naive, accuracy, accuracy_pruned_tree, accurac
 
 #Recall
 
-table(nb_predicted, test$Attrition)
+table(nb_predicted, test$Attrition) #nb
+confusion_matrix #logit
+table(pruned_tree_predicted, test$Attrition) #tree
+table(bag_predicted, test$Attrition) #bootstrap
+table(rf_predicted, test$Attrition) #random forest
+
 recall_nb <- 39/(39+20)
-
-table(pruned_tree_predicted, test$Attrition)
 recall_tree <- 17/(17+42)
-
-table(bag_predicted, test$Attrition)
 recall_bootstrap <- 16/(16+43)
-
-table(rf_predicted, test$Attrition)
 recall_rf <- 16/(16+43)
 
 recall_comp <- round(c(recall_nb, recall, recall_tree, recall_bootstrap, recall_rf),4)
 
 summary(tree_attrition)
 summary(lm16)
+
+#Precision
+
+pre_logit <- 26/(26+13)
+pre_nb <- 39/(39+61)
+pre_tree <- 17/(17+19)
+pre_bootstrap <- 18/(18+15)
+pre_rf <- 16/(16+11)
+
+pre_comp <- round(c(pre_nb, pre_logit, pre_tree, pre_bootstrap, pre_rf),4)
+
+#F1-scores
+
+F1_logit <- (2*pre_logit*recall)/(pre_logit+recall)
+F1_nb <- (2*pre_nb*recall_nb)/(pre_nb+recall_nb)
+F1_tree <- (2*pre_tree*recall_tree)/(pre_tree+recall_tree)
+F1_bootstrap <- (2*pre_bootstrap*recall_bootstrap)/(pre_bootstrap+recall_bootstrap)
+F1_rf <- (2*pre_rf*recall_rf)/(pre_rf+recall_rf)
+
+f1_comp <- round(c(F1_nb, F1_logit, F1_tree, F1_bootstrap, F1_rf),4)
 
 #Cohen's kappa
 
@@ -557,7 +578,5 @@ library(psych)
 cohen <- cohen.kappa(cbind(nb_predicted, glm.pred, pruned_tree_predicted, bag_predicted, rf_predicted))
 cohen_comp <- cohen$av.wt #fair agreement
 
-model_comparison <- cbind(model_names, accuracy_comp, recall_comp)
+model_comparison <- cbind(model_names, accuracy_comp, recall_comp, pre_comp, f1_comp)
 write.csv(model_comparison, "model_comparison.csv")
-
-write.csv(confusion_matrix, "confusion_matrix_glm.csv")
