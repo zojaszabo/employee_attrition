@@ -140,73 +140,233 @@ train <- train [,-29]
 
 #bar charts of categorical features by y
 
-chart5 <- ggplot(df, aes(y = Department)) +
-  geom_bar(aes(fill = Attrition)) +
-  scale_fill_grey(start = 0.6, end = 0.1) +
-  theme(legend.position = "right")
+department <- df %>% 
+  count(Department, Attrition) %>%
+  mutate(Freq = n)
 
-chart5
+chart5 <- ggplot(department, aes(Department, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = 1))+
+  theme_classic() + 
+  labs(x = "Department", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition") +
+  coord_flip()
 
-chart6 <- ggplot(df, aes(y = BusinessTravel)) +
-  geom_bar(aes(fill = Attrition)) +
-  scale_fill_grey(start = 0.6, end = 0.1) +
-  theme(legend.position = "right")
+job_role <- df %>% 
+  count(JobRole, Attrition) %>%
+  mutate(Freq = n)
 
-chart7 <- ggplot(df, aes(y = EducationField)) +
-  geom_bar(aes(fill = Attrition)) +
-  scale_fill_grey(start = 0.6, end = 0.1) +
-  theme(legend.position = "right")
+chart9 <- ggplot(job_role, aes(JobRole, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = 1))+
+  theme_classic() + 
+  labs(x = "Job role", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition") +
+  coord_flip()
 
-chart8 <- ggplot(df, aes(y = Gender)) +
-  geom_bar(aes(fill = Attrition)) +
-  scale_fill_grey(start = 0.6, end = 0.1) +
-  theme(legend.position = "right")
+education_field <- df %>% 
+  count(EducationField, Attrition) %>%
+  mutate(Freq = n)
 
-chart9 <- ggplot(df, aes(y = JobRole)) +
-  geom_bar(aes(fill = Attrition)) +
-  scale_fill_grey(start = 0.6, end = 0.1) +
-  theme(legend.position = "right")
+chart7 <- ggplot(education_field, aes(EducationField, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = 1))+
+  theme_classic() + 
+  labs(x = "Education field", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition") +
+  coord_flip()
 
-chart10 <- ggplot(df, aes(y = MaritalStatus)) +
-  geom_bar(aes(fill = Attrition)) +
-  scale_fill_grey(start = 0.6, end = 0.1) +
-  theme(legend.position = "right")
+gender <- df %>% 
+  count(Gender, Attrition) %>%
+  mutate(Freq = n)
 
-chart11 <- ggplot(df, aes(y = OverTime)) +
-  geom_bar(aes(fill = Attrition)) +
-  scale_fill_grey(start = 0.6, end = 0.1) +
-  theme(legend.position = "right")
+chart8 <- ggplot(gender, aes(Gender, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = 1))+
+  theme_classic() + 
+  labs(x = "Gender", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition") +
+  coord_flip()
 
-chart12 <- ggplot(df, aes(y = StockOptions)) +
-  geom_bar(aes(fill = Attrition)) +
-  scale_fill_grey(start = 0.6, end = 0.1) +
-  theme(legend.position = "right")
+business_travel <- df %>% 
+  count(BusinessTravel, Attrition) %>%
+  mutate(Freq = n)
+
+chart6 <- ggplot(business_travel, aes(BusinessTravel, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = 1))+
+  theme_classic() + 
+  labs(x = "Business travel", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition") +
+  coord_flip()
+
+marital_status <- df %>% 
+  count(MaritalStatus, Attrition) %>%
+  mutate(Freq = n)
+
+chart10 <- ggplot(marital_status, aes(MaritalStatus, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = 1))+
+  theme_classic() + 
+  labs(x = "Marital status", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition") +
+  coord_flip()
+
+over_time <- df %>% 
+  count(OverTime, Attrition) %>%
+  mutate(Freq = n)
+
+chart11 <- ggplot(over_time, aes(OverTime, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = 1))+
+  theme_classic() + 
+  labs(x = "Overtime", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition") +
+  coord_flip()
+
+stock_options <- df %>% 
+  count(StockOptions, Attrition) %>%
+  mutate(Freq = n)
+
+chart12 <- ggplot(stock_options, aes(StockOptions, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = 1))+
+  theme_classic() + 
+  labs(x = "Stock options", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition") +
+  coord_flip()
 
 
 library(ggpubr)
 
 
-combined_plot <- ggarrange(chart5,
+combined_plot1 <- ggarrange(chart5,
                            chart6,
                            chart7,
-                           chart8,
                            chart9,
-                           chart10,
-                           chart11,
-                           chart12,
-                           nrow = 3,
-                           ncol = 3)
+                           nrow = 2,
+                           ncol = 2)
 
-combined_plot
+combined_plot2 <- ggarrange(chart8,
+                            chart10,
+                            chart11,
+                            chart12,
+                            nrow = 2,
+                            ncol = 2)
+
+combined_plot1
+combined_plot2
 
 #monthly income and attrition
 
-chart13 <- ggplot(df, aes(x = Attrition, y = MonthlyIncome)) +
-  geom_boxplot() +
-  scale_fill_grey() +
-  theme(legend.position = "right")
+monthlyincome_chart <- ggplot(df, aes(MonthlyIncome, color = Attrition)) +
+  geom_density() +
+  theme(legend.position = "bottom")
 
-chart13
+monthlyincome_chart
+
+#years at company and attrititon
+
+years_at_company <- df %>% 
+  count(YearsAtCompany, Attrition) %>%
+  mutate(Freq = n)
+
+yearsatcompany_chart <- ggplot(years_at_company, aes(YearsAtCompany, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = .5))+
+  theme_classic() + 
+  labs(x = "Years at company", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition")
+
+yearsatcompany_chart
+
+#distance from home and attrition
+
+df$DistanceFromHome <- cut(df$DistanceFromHome, breaks = 5)
+
+distance_attrition <- df %>% 
+  count(DistanceFromHome, Attrition) %>%
+  mutate(Freq = n)
+
+distance_chart <- ggplot(distance_attrition, aes(x = DistanceFromHome, y = Freq, fill = Attrition))+  
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = .5))+
+  theme_classic() + 
+  labs(x = "Distance from home", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition")
+
+distance_chart
+
+#satisfaction-related variables and y
+
+job_satisfaction <- df %>% 
+  count(JobSatisfaction, Attrition) %>%
+  mutate(Freq = n)
+
+sf_job <- ggplot(job_satisfaction, aes(JobSatisfaction, Freq,
+                                       fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = .5))+
+  theme_classic() + 
+  labs(x = "Job satisfaction", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition")
+
+WLB <- df %>% 
+  count(WorkLifeBalance, Attrition) %>%
+  mutate(Freq = n)
+
+wlb <- ggplot(WLB, aes(WorkLifeBalance, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = .5))+
+  theme_classic() + 
+  labs(x = "WLB", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition")
+
+environment_satisfaction <- df %>% 
+  count(EnvironmentSatisfaction, Attrition) %>%
+  mutate(Freq = n)
+
+sf_environment <- ggplot(environment_satisfaction, aes(EnvironmentSatisfaction, Freq,
+                                                       fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = .5))+
+  theme_classic() + 
+  labs(x = "Environment satisfaction", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition")
+
+job_involvement <- df %>% 
+  count(JobInvolvement, Attrition) %>%
+  mutate(Freq = n)
+
+involvement_job <- ggplot(job_involvement, aes(JobInvolvement, Freq, fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = .5))+
+  theme_classic() + 
+  labs(x = "Job involvement", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition")
+
+relationship_satisfaction <- df %>% 
+  count(RelationshipSatisfaction, Attrition) %>%
+  mutate(Freq = n)
+
+sf_relationship <- ggplot(relationship_satisfaction, aes(RelationshipSatisfaction, Freq,
+                                                         fill = Attrition)) +
+  geom_bar(stat="identity") + 
+  geom_text(aes(label = Freq), position = position_stack(vjust = .5))+
+  theme_classic() + 
+  labs(x = "Relationship satisfaction", y = "count", fill="Attrition")+  
+  scale_fill_discrete(name = "Attrition")
+
+
+satisfaction_chart <- ggarrange(wlb,
+                                sf_job,
+                                involvement_job,
+                                sf_environment,
+                                sf_relationship,
+                                nrow = 2,
+                                ncol = 3)
+
+satisfaction_chart
 
 #Median monthly icome by y
 
@@ -214,7 +374,7 @@ library(dplyr)
 
 df %>%
   group_by(Attrition) %>% 
-  summarise(Mean=mean(MonthlyIncome))
+  summarise(median(MonthlyIncome))
 
 df <- df[,1:28]
 
@@ -226,9 +386,9 @@ library(ggcorrplot)
 nums <- select_if(df, is.numeric)
 correl_matrix <- round(cor(nums),1)
 
-chart14 <- ggcorrplot(correl_matrix, method ="square", hc.order = TRUE, type = "lower", 
-           outline.color ="grey", lab = TRUE, colors = c("grey", "white", "darkgrey"))
-chart14
+chart15 <- ggcorrplot(correl_matrix, method ="square", hc.order = TRUE, type = "lower", 
+           outline.color ="grey", lab = TRUE, colors = c("#00BFC4", "white", "#F8766D"))
+chart15
 
 # Naive Bayes Classification ----------------------------------------------
 
@@ -249,7 +409,7 @@ nb_predicted <- predict(classifier_nb, test)
 
 #Confusion Matrix
 
-table(test$Attrition, nb_predicted)
+confusion_matrix_nb <- table(test$Attrition, nb_predicted)
 accuracy_naive <- (236+39)/356
 
 # Logistic regression model building --------------------------------------
@@ -380,20 +540,20 @@ pseudo_values <- c(pseudo_r_1, pseudo_r_2, pseudo_r_3, pseudo_r_4, pseudo_r_5, p
 pseudo_comparison <- cbind.data.frame(model_names, pseudo_values) #warining: comparing pseudo r values leads to false conclusions
 write.csv(pseudo_comparison, "pseudo_comparison.csv")
 
-#variable importance
+#variable importance (the absolute value of the t-statistic for each model parameter is used)
 
 varimp <- caret::varImp(lm16)[,-2]
 variables <- variable.names(lm16)[-1]
 
 varimp <- caret::varImp(lm16)
 
-chart15 <- varimp %>% 
+chart16 <- varimp %>% 
  mutate(variables = fct_reorder(variables, varimp$Overall)) %>% 
  ggplot(aes(x = variables, y = varimp$Overall)) +
  labs (x = "Variable", y = "Importance") +
  geom_bar(stat = "identity") + coord_flip()
 
-chart15
+chart16
 
 #calculate VIF values for each predictor variable in our model
 
@@ -580,3 +740,6 @@ cohen_comp <- cohen$av.wt #fair agreement
 
 model_comparison <- cbind(model_names, accuracy_comp, recall_comp, pre_comp, f1_comp)
 write.csv(model_comparison, "model_comparison.csv")
+
+variables <- t(t(sapply(df, class)))
+
