@@ -406,6 +406,7 @@ classifier_nb
 
 set.seed(1)
 nb_predicted <- predict(classifier_nb, test)
+nb_predicted
 
 #Confusion Matrix
 
@@ -521,7 +522,7 @@ summary(lm16)
 library(pixiedust)
 
 final_model <- data.frame(dust(lm16) %>% 
-  sprinkle(cols = c("estimate", "std.error", "statistic"), round = 2) %>%
+  sprinkle(cols = c("estimate", "std.error", "statistic"), round = 4) %>%
   sprinkle(cols = "p.value", fn = quote(pvalString(value))) %>% 
   sprinkle_colnames("Term", "Coefficient", "SE", "T-statistic", 
                     "P-value"))
@@ -575,6 +576,9 @@ confusion_matrix <- table(glm.pred, test$Attrition)
 confusion_matrix
 
 accuracy <- (284+30)/356 #logistic regression model is working way better than random guessing
+recall <- 26/(26+33)
+precision <- 26/(26+13)
+f1 <- (2*precision*recall)/(precision+recall)
 
 library(pROC)
 
@@ -586,18 +590,23 @@ chart17 <- ggroc(ROC, colour = 'darkgrey', size = 2) +
 
 chart17
 
-new_cutoff <- coords(ROC, "best", ret = "threshold", best.method = "youden")
+#new cut-off value
 
-set.seed(1)
+df %>% 
+  group_by(Attrition) %>% 
+  summarize(percent = 100 * n() / nrow(df))
+
+new_cutoff <- 0.174
+
 new_glm.pred <- rep("No", 356)
-new_glm.pred[predicted >new_cutoff$threshold] = "Yes"
+new_glm.pred[predicted > new_cutoff] = "Yes"
 
 new_confusion_matrix <- table(new_glm.pred, test$Attrition)
 new_confusion_matrix
 
-accuracy_new <- (272+39)/356
-recall <- 39/(39+20)
-specificity <- 272/(272+25)
+accuracy_new <- (214+47)/356
+recall_new <- 47/(47+12)
+specificity_new <- 214/(214+83)
 
 
 # Fitting classification trees --------------------------------------------
@@ -618,7 +627,7 @@ tree_attrition
 
 set.seed(1)
 tree_predicted <- predict(tree_attrition, test, type = "class")
-table(tree_predicted, test$Attrition)
+tree_confusion <- table(tree_predicted, test$Attrition)
 
 accuracy_tree <- (272+22)/356 #classification tree is working way better than random guessing
 
@@ -660,7 +669,7 @@ set.seed(1)
 bag_attrition <- randomForest(Attrition ~., train, mtry = 27, importance =TRUE)
 bag_attrition
 
-#use pruned tree to make predictions
+#use bagged tree to make predictions
 
 set.seed(1)
 bag_predicted <- predict(bag_attrition, test)
@@ -691,12 +700,12 @@ model_names <- c( "Naive Bayes", "LR", "Classification Tree", "Bootstrap", "Rand
 
 #Accuracy
 
-accuracy_comp <- round(c(accuracy_naive, accuracy, accuracy_pruned_tree, accuracy_bagged_tree, accuracy_rf),4)
+accuracy_comp <- round(c(accuracy_naive, accuracy_new, accuracy_pruned_tree, accuracy_bagged_tree, accuracy_rf),4)
 
 #Recall
 
 table(nb_predicted, test$Attrition) #nb
-confusion_matrix #logit
+new_confusion_matrix #logit
 table(pruned_tree_predicted, test$Attrition) #tree
 table(bag_predicted, test$Attrition) #bootstrap
 table(rf_predicted, test$Attrition) #random forest
@@ -706,14 +715,14 @@ recall_tree <- 17/(17+42)
 recall_bootstrap <- 16/(16+43)
 recall_rf <- 16/(16+43)
 
-recall_comp <- round(c(recall_nb, recall, recall_tree, recall_bootstrap, recall_rf),4)
+recall_comp <- round(c(recall_nb, recall_new, recall_tree, recall_bootstrap, recall_rf),4)
 
 summary(tree_attrition)
 summary(lm16)
 
 #Precision
 
-pre_logit <- 26/(26+13)
+pre_logit <- 47/(47+83)
 pre_nb <- 39/(39+61)
 pre_tree <- 17/(17+19)
 pre_bootstrap <- 18/(18+15)
@@ -723,7 +732,7 @@ pre_comp <- round(c(pre_nb, pre_logit, pre_tree, pre_bootstrap, pre_rf),4)
 
 #F1-scores
 
-F1_logit <- (2*pre_logit*recall)/(pre_logit+recall)
+F1_logit <- (2*pre_logit*recall_new)/(pre_logit+recall_new)
 F1_nb <- (2*pre_nb*recall_nb)/(pre_nb+recall_nb)
 F1_tree <- (2*pre_tree*recall_tree)/(pre_tree+recall_tree)
 F1_bootstrap <- (2*pre_bootstrap*recall_bootstrap)/(pre_bootstrap+recall_bootstrap)
@@ -735,7 +744,7 @@ f1_comp <- round(c(F1_nb, F1_logit, F1_tree, F1_bootstrap, F1_rf),4)
 
 library(psych)
 
-cohen <- cohen.kappa(cbind(nb_predicted, glm.pred, pruned_tree_predicted, bag_predicted, rf_predicted))
+cohen <- cohen.kappa(cbind(nb_predicted, new_glm.pred, pruned_tree_predicted, bag_predicted, rf_predicted))
 cohen_comp <- cohen$av.wt #fair agreement
 
 model_comparison <- cbind(model_names, accuracy_comp, recall_comp, pre_comp, f1_comp)
